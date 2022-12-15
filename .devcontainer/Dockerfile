@@ -1,16 +1,22 @@
 
 # See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.209.6/containers/ubuntu/.devcontainer/base.Dockerfile
 
-FROM mcr.microsoft.com/vscode/devcontainers/base:jammy
+# [Choice] Ubuntu version (use hirsute or bionic on local arm64/Apple Silicon): hirsute, focal, bionic
+ARG VARIANT="focal"
+FROM buildpack-deps:${VARIANT}-curl
+
+# Options for setup script
+ARG INSTALL_ZSH="true"
+ARG UPGRADE_PACKAGES="true"
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+# Install needed packages and setup non-root user. Use a separate RUN statement to add your own dependencies.
+COPY library-scripts/*.sh library-scripts/*.env /tmp/library-scripts/
+RUN yes | unminimize 2>&1 \ 
+    && bash /tmp/library-scripts/common-debian.sh "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "true" "true" \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts
 
 # [Optional] Uncomment this section to install additional OS packages.
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends wget unzip curl apt-transport-https ca-certificates gnupg jq openssh-client software-properties-common -y \
-    && wget https://releases.hashicorp.com/terraform/0.14.7/terraform_0.14.7_linux_amd64.zip \
-    && unzip terraform_0.14.7_linux_amd64.zip \
-    && mv terraform /usr/local/bin/ \
-    && terraform -v \
-    && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main"  | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
-    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg  | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
-    && apt-get update -y \
-    && apt-get install google-cloud-cli -y \
+# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+#     && apt-get -y install --no-install-recommends <your-package-list-here>
