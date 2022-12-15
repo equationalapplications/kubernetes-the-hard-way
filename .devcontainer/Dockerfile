@@ -5,8 +5,10 @@ ARG VARIANT="hirsute"
 FROM mcr.microsoft.com/vscode/devcontainers/base:0-${VARIANT}
 
 # [Optional] Uncomment this section to install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#    && apt-get -y install --no-install-recommends wget unzip curl apt-transport-https ca-certificates gnupg jq openssh-client software-properties-common -y
+RUN export DOCKER_BUILDKIT=0 \
+  export COMPOSE_DOCKER_CLI_BUILD=0 \
+  apt-get update && export DEBIAN_FRONTEND=noninteractive \
+  && apt-get -y install --no-install-recommends wget unzip curl apt-transport-https ca-certificates gnupg jq openssh-client software-properties-common -y
 #    && wget https://releases.hashicorp.com/terraform/0.14.7/terraform_0.14.7_linux_amd64.zip \
 #    && unzip terraform_0.14.7_linux_amd64.zip \
 #    && mv terraform /usr/local/bin/ \
