@@ -1,3 +1,9 @@
+
+# See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.209.6/containers/ubuntu/.devcontainer/base.Dockerfile
+
+FROM mcr.microsoft.com/vscode/devcontainers/base:jammy
+
+# [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends wget unzip curl apt-transport-https ca-certificates gnupg jq openssh-client software-properties-common -y \
     && wget https://releases.hashicorp.com/terraform/0.14.7/terraform_0.14.7_linux_amd64.zip \
